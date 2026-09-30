@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài tập Ngữ pháp N2 - Bài 5 (Shinkanzen)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        body {
+            background: linear-gradient(rgba(255, 245, 247, 0.55), rgba(240, 220, 225, 0.65)),
+                        url('https://images.unsplash.com/photo-1522383225653-ed111181a951?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat fixed;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .sakura-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+        .petal {
+            position: absolute;
+            background: #ffb7c5;
+            border-radius: 15px 0 15px 0;
+            opacity: 0.75;
+            filter: drop-shadow(0 2px 4px rgba(216, 90, 127, 0.2));
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            0% { transform: translate(0, -10px) rotate(0deg); opacity: 0.8; }
+            100% { transform: translate(120px, 105vh) rotate(360deg); opacity: 0; }
+        }
+
+        .app-card {
+            position: relative;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            width: 100%;
+            max-width: 600px;
+            border-radius: 24px;
+            padding: 32px 28px;
+            border: 1.5px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 20px 40px rgba(180, 100, 120, 0.15);
+        }
+
+        .lesson-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #d85a7f;
+            margin-bottom: 6px;
+        }
+
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            font-size: 14px; 
+            font-weight: 700; 
+            color: #b06d7e; 
+            margin-bottom: 20px; 
+            padding-bottom: 10px;
+            border-bottom: 1.5px solid #f2d5db;
+        }
+
+        .question-card {
+            background: #fff5f7;
+            border-left: 4px solid #d85a7f;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .question-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #d85a7f;
+            margin-bottom: 8px;
+        }
+
+        .question-text { 
+            font-size: 18px; 
+            font-weight: 600; 
+            color: #3a2e30; 
+            line-height: 1.6;
+        }
+
+        .options-grid { display: flex; flex-direction: column; gap: 12px; }
+        
+        .opt-btn {
+            display: flex;
+            align-items: center;
+            background: #ffffff;
+            border: 1.5px solid #f2d5db;
+            color: #4a383b;
+            padding: 14px 18px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .opt-btn::before {
+            content: '';
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #b06d7e;
+            border-radius: 50%;
+            margin-right: 14px;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .opt-btn:hover { 
+            background: #fff0f3; 
+            border-color: #d85a7f; 
+            transform: translateY(-1px); 
+        }
+
+        .opt-btn.correct { 
+            background: #e8f5e9 !important; 
+            border-color: #66bb6a !important; 
+            color: #2e7d32 !important; 
+        }
+        .opt-btn.correct::before {
+            background: #4caf50;
+            border-color: #4caf50;
+            box-shadow: inset 0 0 0 3px #ffffff;
+        }
+
+        .opt-btn.wrong { 
+            background: #ffebee !important; 
+            border-color: #ef5350 !important; 
+            color: #c62828 !important; 
+        }
+        .opt-btn.wrong::before {
+            background: #ef5350;
+            border-color: #ef5350;
+            box-shadow: inset 0 0 0 3px #ffffff;
+        }
+
+        .feedback { 
+            display: none;
+            margin-top: 20px; 
+            font-size: 15px; 
+            text-align: left;
+        }
+
+        .result-status {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .explain-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1.5px solid #f2d5db;
+            border-radius: 16px;
+            padding: 16px;
+            line-height: 1.6;
+            color: #3a2e30;
+        }
+
+        .explain-item {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .explain-item:last-child { margin-bottom: 0; }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-right: 6px;
+            color: white;
+        }
+        .tag-grammar { background: #e07a9e; }
+        .tag-trans { background: #5c6bc0; }
+        .tag-meaning { background: #26a69a; }
+
+        .next-btn {
+            display: block;
+            width: 100%;
+            margin-top: 16px;
+            background: linear-gradient(135deg, #e07a9e 0%, #d85a7f 100%);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .next-btn:hover { opacity: 0.95; transform: translateY(-1px); }
+    </style>
+</head>
+<body>
+
+    <div class="sakura-container" id="sakura-box"></div>
+
+    <div class="app-card">
+        <div class="lesson-title">Bài 5 - N2 (Shinkanzen Master)</div>
+
+        <div class="header">
+            <span id="q-count">Câu 1 / 22</span>
+            <span id="score-count">Điểm: 0</span>
+        </div>
+
+        <div class="question-card">
+            <div class="question-title" id="q-type">Câu 1: Chọn đáp án đúng</div>
+            <div class="question-text" id="question-content"></div>
+        </div>
+
+        <div class="options-grid" id="quiz-box">
+            <button class="opt-btn" onclick="checkAnswer(0)"></button>
+            <button class="opt-btn" onclick="checkAnswer(1)"></button>
+            <button class="opt-btn" onclick="checkAnswer(2)"></button>
+        </div>
+
+        <div class="feedback" id="feedback">
+            <div class="result-status" id="result-status"></div>
+            <div class="explain-card">
+                <div class="explain-item"><span class="tag tag-grammar">Cấu trúc</span><span id="ex-grammar"></span></div>
+                <div class="explain-item"><span class="tag tag-meaning">Ý nghĩa</span><span id="ex-meaning"></span></div>
+                <div class="explain-item"><span class="tag tag-trans">Dịch câu</span><span id="ex-trans"></span></div>
+            </div>
+            <button class="next-btn" onclick="nextQuestion()">Câu tiếp theo ➔</button>
+        </div>
+    </div>
+
+    <script>
+        function createPetal() {
+            const box = document.getElementById('sakura-box');
+            const p = document.createElement('div');
+            p.classList.add('petal');
+            p.style.width = Math.random() * 8 + 8 + 'px';
+            p.style.height = Math.random() * 10 + 10 + 'px';
+            p.style.left = Math.random() * 100 + 'vw';
+            p.style.animationDuration = Math.random() * 4 + 6 + 's';
+            box.appendChild(p);
+            setTimeout(() => p.remove(), 10000);
+        }
+        setInterval(createPetal, 400);
+
+        // Toàn bộ 22 câu bài tập Shinkanzen N2 - Bài 5 (Trang 26 - 27)
+        const quizData = [
+            // Mục 1: ～に限り
+            {
+                q: '商品の返品・交換は、( ) に限り、お受けしております。',
+                options: ['お買い求めの方', '未使用の場合', '当店のすべての商品'],
+                answer: 1,
+                grammar: 'N + に限り',
+                meaning: 'Chỉ riêng đối tượng N là ngoại lệ đặc biệt (Dùng trong thông báo chính thức).',
+                trans: 'Việc đổi trả hàng chỉ chấp nhận áp dụng riêng đối với trường hợp chưa qua sử dụng.'
+            },
+            {
+                q: 'この遊園地では ( ) に限り、入場料が無料になります。',
+                options: ['第4日曜日', '月曜日から土曜日', '週末以外'],
+                answer: 0,
+                grammar: 'N + に限り',
+                meaning: 'Ngoại lệ đặc biệt đối với thời gian/đối tượng xác định.',
+                trans: 'Tại công viên giải trí này, chỉ riêng Chủ nhật tuần thứ 4 mới được miễn phí vé vào cửa.'
+            },
+            {
+                q: 'お子様に限り、( )。',
+                options: ['子供料金は100円です', 'ここには入らないでください', 'プレゼントがあります'],
+                answer: 2,
+                grammar: 'N + に限り + Xử lý ngoại lệ ưu đãi',
+                meaning: 'Đưa ra một chế độ/xử lý đặc biệt dành riêng cho đối tượng.',
+                trans: 'Chỉ riêng trẻ em mới có quà tặng.'
+            },
+            {
+                q: '成人女性に限り、この会に ( )。',
+                options: ['参加することができる', '参加した', '参加する'],
+                answer: 0,
+                grammar: 'N + に限り + Điều kiện/Khả năng',
+                meaning: 'Vế sau đưa ra quyền lợi/điều kiện đặc biệt.',
+                trans: 'Chỉ riêng phụ nữ trưởng thành mới có thể tham gia vào hội này.'
+            },
+            {
+                q: 'ここに車を止められるのは、許可をもらっている人 ( ) です。',
+                options: ['しか', 'だけ', 'に限り'],
+                answer: 2,
+                grammar: 'N + に限り',
+                meaning: 'Dùng cấu trúc trang trọng chỉ trường hợp được cấp phép.',
+                trans: 'Xe được đỗ ở đây chỉ dành riêng cho những người đã có giấy phép.'
+            },
+            // Mục 2: ～限り（は）
+            {
+                q: 'あなたが彼に ( ) 限り、彼もあなたを許さないだろう。',
+                options: ['謝る', '謝らない', '謝っていない'],
+                answer: 1,
+                grammar: 'V-普通形 + 限り（は）',
+                meaning: 'Chừng nào trạng thái A vẫn tiếp diễn thì trạng thái B cũng không thay đổi.',
+                trans: 'Chừng nào bạn chưa xin lỗi anh ấy thì chắc là anh ấy cũng sẽ không tha thứ cho bạn đâu.'
+            },
+            {
+                q: '( ) 限りは、社会のルールに従うべきだ。',
+                options: ['社会人である', '社会人になる', '社会人の'],
+                answer: 0,
+                grammar: 'N である + 限り（は）',
+                meaning: 'Chừng nào còn mang tư cách/vai trò N.',
+                trans: 'Chừng nào còn là một người đã đi làm (thành viên xã hội), bạn phải tuân thủ các quy tắc xã hội.'
+            },
+            {
+                q: '( ) 限り、出勤は無理だ。',
+                options: ['熱が出た', '高熱が続く', '熱が38度になった'],
+                answer: 1,
+                grammar: 'V-辞書形 / Trạng thái kéo dài + 限り',
+                meaning: 'Chừng nào trạng thái (sốt cao tiếp diễn) vẫn còn thì không thể làm việc.',
+                trans: 'Chừng nào còn sốt cao kéo dài thì việc đi làm là không thể.'
+            },
+            {
+                q: '父がこの結婚を許してくれない限り、( )。',
+                options: ['父を説得してください', 'わたしは家を出るつもりだ', 'わたしは結婚できない'],
+                answer: 2,
+                grammar: 'V-ない形 + 限り + Kết quả không thay đổi',
+                meaning: 'Vế sau thể hiện kết quả duy trì trạng thái nếu vế trước không thay đổi.',
+                trans: 'Chừng nào bố chưa đồng ý cuộc hôn nhân này thì tôi không thể kết hôn được.'
+            },
+            {
+                q: '選手一人一人がチーム全体のことを考えて行動しない限り、このチームは ( )。',
+                options: ['強くならない', '強くなる', '今度の試合で負ける'],
+                answer: 0,
+                grammar: 'V-ない形 + 限り + Phủ định điều kiện',
+                meaning: 'Nếu không làm A thì B cũng không thể xảy ra.',
+                trans: 'Chừng nào từng tuyển thủ chưa biết hành động vì tập thể đội thì đội bóng này không thể mạnh lên được.'
+            },
+            // Mục 3: ～限りでは
+            {
+                q: 'わたしが ( ) 限りでは、彼は日本に来てから5回引っ越した。',
+                options: ['覚える', '覚えた', '覚えている'],
+                answer: 2,
+                grammar: 'V-ている + 限りでは',
+                meaning: 'Trong phạm vi thông tin có được (nhớ được, biết được, điều tra được).',
+                trans: 'Trong phạm vi tôi còn nhớ, anh ấy đã chuyển nhà 5 lần kể từ khi đến Nhật Bản.'
+            },
+            {
+                q: '( ) の限りでは、首相の支持率は1年前と変わっていない。',
+                options: ['ニュース', 'アンケート調査', 'みんなの評判'],
+                answer: 1,
+                grammar: 'N + の限りでは',
+                meaning: 'Dựa trên phạm vi nguồn thông tin/đối tượng khảo sát.',
+                trans: 'Trong phạm vi cuộc khảo sát ý kiến, tỷ lệ ủng hộ Thủ tướng không thay đổi so với 1 năm trước.'
+            },
+            {
+                q: '( ) 限りでは、あの会社は今、アルバイトを募集していない。',
+                options: ['メールを書いた', 'メールで知らせた', 'インターネットで調べた'],
+                answer: 2,
+                grammar: 'V-た形 + 限りでは',
+                meaning: 'Trong phạm vi thông tin tra cứu được.',
+                trans: 'Trong phạm vi tôi tìm kiếm trên Internet, công ty đó hiện không tuyển nhân viên làm thêm.'
+            },
+            {
+                q: 'わたしが知っている限りでは、( )。',
+                options: ['この地方には温泉が3か所しかない', 'この地方の温泉を回ってみたい', 'この地方の温泉にわたしは1年に2度来る'],
+                answer: 0,
+                grammar: 'V-ている + 限りでは + Đưa ra thông tin/đánh giá',
+                meaning: 'Vế sau đưa ra thông tin xác thực dựa trên phạm vi hiểu biết.',
+                trans: 'Trong phạm vi hiểu biết của tôi, vùng này chỉ có 3 nơi có suối nước nóng.'
+            },
+            // Mục 4: ～に限って
+            {
+                q: '( ) 田中さんに限ってそんなミスをするはずがない。',
+                options: ['いつも明るい', 'よく忘れ物をする', '注意深い'],
+                answer: 2,
+                grammar: 'N + に限って + Phủ định chắc chắn',
+                meaning: 'Đặc biệt tin tưởng đối tượng N nên nhất định không có chuyện xấu đó xảy ra.',
+                trans: 'Riêng một người cẩn thận như anh Tanaka thì không thể nào mắc lỗi như vậy được.'
+            },
+            {
+                q: '水泳の練習は大好きだが、その日に限って ( )。',
+                options: ['気が進まなかった', 'プールで泳いだ', '特別な練習をした'],
+                answer: 0,
+                grammar: 'N + に限って + Trạng thái khác thường ngày',
+                meaning: 'Khác với thói quen bình thường (Đúng vào ngày hôm đó lại khác).',
+                trans: 'Tôi rất thích luyện tập bơi lội, nhưng đúng vào ngày hôm đó tôi lại không hứng thú chút nào.'
+            },
+            {
+                q: '期待されていたあの選手に限って ( ) なんて思っていなかった。',
+                options: ['優勝する', 'こんな失敗をする', 'こんなに上手にできた'],
+                answer: 1,
+                grammar: 'N + に限って + Sự việc thất vọng/xấu',
+                meaning: 'Nhiều kỳ vọng vào N nhưng riêng N lại xảy ra chuyện không hay.',
+                trans: 'Tôi không thể ngờ rằng riêng tuyển thủ được kỳ vọng như vậy mà lại mắc phải thất bại thế này.'
+            },
+            {
+                q: '急いでいるときに限って ( )。',
+                options: ['バスがすぐ来る', 'バスもタクシーも来ない', 'タクシーに乗らないほうがいい'],
+                answer: 1,
+                grammar: 'N + に限って + Xui xẻo ngẫu nhiên',
+                meaning: 'Chuyện không may ngẫu nhiên trùng hợp đúng lúc.',
+                trans: 'Đúng vào lúc đang vội thì cả xe buýt lẫn taxi đều không thấy tới.'
+            },
+            {
+                q: '僕たちの先生は、どうしても見たいテレビ番組がある日に限って ( )。',
+                options: ['たくさん宿題を出す', 'たくさん宿題を出さない', '早く授業を終わらせる'],
+                answer: 0,
+                grammar: 'N + に限って + Chuyện xui xẻo/bất mãn',
+                meaning: 'Đúng vào lúc không muốn thì sự việc khó chịu lại xảy ra.',
+                trans: 'Thầy giáo của chúng tôi đúng vào những ngày có chương trình TV muốn xem thì lại giao rất nhiều bài tập về nhà.'
+            },
+            // Mục 1~4: Bài tập tổng hợp
+            {
+                q: '( )、そんな名前のホテルはこの県にはないようだ。',
+                options: ['インターネットで検索した限りでは', 'インターネットでの検索に限り', 'インターネットでの検索に限って'],
+                answer: 0,
+                grammar: 'V-た形 + 限りでは',
+                meaning: 'Trong phạm vi tìm kiếm thông tin.',
+                trans: 'Trong phạm vi tìm kiếm trên Internet, có vẻ không có khách sạn nào tên như vậy ở tỉnh này.'
+            },
+            {
+                q: 'サッカーの練習はグラウンドで行います。ただし、( )、体育館を使います。',
+                options: ['大雨の場合に限り', '大雨の限りでは', '大雨の限り'],
+                answer: 0,
+                grammar: 'N + に限り',
+                meaning: 'Chỉ riêng trong trường hợp đặc biệt.',
+                trans: 'Buổi tập bóng đá sẽ diễn ra tại sân vận động. Tuy nhiên, chỉ riêng trường hợp mưa lớn mới sử dụng nhà thi đấu.'
+            },
+            {
+                q: 'わたしが歩いて ( )、この町には子供たちのための安全な遊び場がほとんどない。',
+                options: ['調べた限りでは', '調べたことに限り', '調べたことに限って'],
+                answer: 0,
+                grammar: 'V-た形 + 限りでは',
+                meaning: 'Dựa trên phạm vi thực tế đã đi quan sát/điều tra.',
+                trans: 'Trong phạm vi tôi đi bộ khảo sát, thị trấn này hầu như không có sân chơi an toàn cho trẻ em.'
+            }
+        ];
+
+        let current = 0, score = 0, canClick = true;
+
+        function init() {
+            const item = quizData[current];
+            document.getElementById('q-count').innerText = `Câu ${current + 1} / ${quizData.length}`;
+            document.getElementById('score-count').innerText = `Điểm: ${score}`;
+            document.getElementById('q-type').innerText = `Câu ${current + 1}: Chọn đáp án đúng`;
+            document.getElementById('question-content').innerText = item.q;
+            document.getElementById('feedback').style.display = 'none';
+            canClick = true;
+
+            const btns = document.querySelectorAll('.opt-btn');
+            btns.forEach((btn, i) => {
+                btn.innerText = item.options[i];
+                btn.className = 'opt-btn';
+            });
+        }
+
+        function checkAnswer(selectedIndex) {
+            if(!canClick) return; 
+            canClick = false;
+
+            const item = quizData[current];
+            const btns = document.querySelectorAll('.opt-btn');
+            const statusEl = document.getElementById('result-status');
+
+            if(selectedIndex === item.answer) {
+                btns[selectedIndex].classList.add('correct'); 
+                score += 10;
+                statusEl.innerHTML = `<span style="color: #4caf50;">✓ 正解 (Chính xác!)</span>`;
+            } else {
+                btns[selectedIndex].classList.add('wrong');
+                btns[item.answer].classList.add('correct');
+                statusEl.innerHTML = `<span style="color: #ef5350;">✕ ざんねん (Đáp án đúng là: ${item.options[item.answer]})</span>`;
+            }
+
+            document.getElementById('ex-grammar').innerText = item.grammar;
+            document.getElementById('ex-meaning').innerText = item.meaning;
+            document.getElementById('ex-trans').innerText = item.trans;
+
+            document.getElementById('feedback').style.display = 'block';
+        }
+
+        function nextQuestion() {
+            current = (current + 1) % quizData.length;
+            init();
+        }
+
+        init();
+    </script>
+</body>
+</html>
